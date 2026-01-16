@@ -39,7 +39,7 @@ export function LoginPage() {
     try {
       await signIn({ email, password });
     } catch {
-      setError("NÇœo foi possÇðvel entrar. Verifique suas credenciais.");
+      setError("Não foi possível entrar. Verifique suas credenciais.");
     }
   }
 
@@ -108,7 +108,7 @@ export function LoginPage() {
 
             <div className="login-register">
               <div>
-                <p className="login-register-title">Ainda nÇœo tem uma conta?</p>
+                <p className="login-register-title">Ainda não tem uma conta?</p>
                 <p className="login-register-subtitle">Cadastre agora mesmo</p>
               </div>
               <button

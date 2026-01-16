@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AuthContext, type SignInInput, type SignUpInput } from "./AuthContext";
 import { clearAuthState, loadAuthState, saveAuthState } from "./authStorage";
 import type { AuthState, AuthUser, Role } from "./types";
@@ -14,19 +14,19 @@ export function AuthProvider({ children }: Props) {
   const isAuthenticated = Boolean(state.token && state.user);
   const userRole: Role | null = state.user?.role ?? null;
 
-  function setAuth(next: { token: string; user: AuthUser }) {
+  const setAuth = useCallback((next: { token: string; user: AuthUser }) => {
     const newState: AuthState = { token: next.token, user: next.user };
     setState(newState);
     saveAuthState(newState);
-  }
+  }, []);
 
-  async function signIn(input: SignInInput): Promise<AuthUser> {
+  const signIn = useCallback(async (input: SignInInput): Promise<AuthUser> => {
     const { token, user } = await api.login(input);
     setAuth({ token, user });
     return user;
-  }
+  }, [setAuth]);
 
-  async function signUp(input: SignUpInput): Promise<AuthUser> {
+  const signUp = useCallback(async (input: SignUpInput): Promise<AuthUser> => {
     await api.registerClient(input);
     const { token, user } = await api.login({
       email: input.email,
@@ -34,12 +34,12 @@ export function AuthProvider({ children }: Props) {
     });
     setAuth({ token, user });
     return user;
-  }
+  }, [setAuth]);
 
-  function signOut() {
+  const signOut = useCallback(() => {
     setState({ token: null, user: null });
     clearAuthState();
-  }
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: Props) {
       signOut,
       setAuth,
     }),
-    [state, isAuthenticated, userRole]
+    [state, isAuthenticated, userRole, signIn, signUp, signOut, setAuth]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

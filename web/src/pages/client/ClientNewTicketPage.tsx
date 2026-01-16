@@ -34,12 +34,6 @@ export function ClientNewTicketPage() {
         if (active) {
           setServices(serviceData);
           setTechnicians(techData);
-          if (!serviceId && serviceData.length) {
-            setServiceId(serviceData[0].id);
-          }
-          if (!technicianId && techData.length) {
-            setTechnicianId(techData[0].id);
-          }
         }
       } catch (err) {
         if (active) {
@@ -55,6 +49,18 @@ export function ClientNewTicketPage() {
       active = false;
     };
   }, [state.token]);
+
+  useEffect(() => {
+    if (!serviceId && services.length) {
+      setServiceId(services[0].id);
+    }
+  }, [serviceId, services]);
+
+  useEffect(() => {
+    if (!technicianId && technicians.length) {
+      setTechnicianId(technicians[0].id);
+    }
+  }, [technicianId, technicians]);
 
   const selectedService = useMemo(() => {
     return services.find((s) => s.id === serviceId) ?? null;
